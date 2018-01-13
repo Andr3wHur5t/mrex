@@ -5,7 +5,7 @@ contract Job {
         address wallet;
         string addresss;
     }
-    
+
     address owner;
     uint payoutAmountGwei;
     uint callLengthMinutes;
@@ -14,9 +14,9 @@ contract Job {
     function Job(address _marketerWallet, uint _minutes, uint _payout) public {
         owner = msg.sender;
         payoutAmountGwei = _payout;
-        
+
     }
-    
+
     function payParticipant
 
     address chairperson;
