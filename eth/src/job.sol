@@ -3,6 +3,7 @@ contract Job {
     struct Bidder {
         address wallet;
         string cypherText;
+        bool exists;
     }
 
     address owner;
@@ -11,7 +12,7 @@ contract Job {
     uint maxParticipants;
 
     // Keyable must be the same between the client and the server.
-    private mapping(keyable => Bidder) bidder;
+    mapping(string => Bidder) private bidder;
 
     function Job(address _marketerWallet, uint _minutes, uint _payout) public {
         owner = msg.sender;
@@ -22,17 +23,16 @@ contract Job {
     // NOTE: this can only be called once per keyable value, this is to prevent overwriting existing data maliciously.
     function registerBidder(string keyable, string cypherText, address wallet) public {
         // Disallow overwriting existing data
-        if (bidder[keyable].isValue) throw;
+        if (bidder[keyable].exists == false) return;
 
         // TODO: Disallow max capacity
-        bidder[keyable] = Bidder{wallet, cypherText};
+        bidder[keyable] = Bidder(wallet, cypherText, true);
     }
 
-    function payParticipant(string encryptedPhoneNumber) private {
+    function payParticipant(string keyable) private {
         if (msg.sender != owner) return;
         if (this.balance > 0) return;
         // validate sender has the right balance
-        address bidder = lookupBidderByNumber(encryptedPhoneNumber);
-        bidder.transfer(payoutAmountGwei);
+        bidder[keyable].wallet.transfer(payoutAmountGwei);
     }
 }
