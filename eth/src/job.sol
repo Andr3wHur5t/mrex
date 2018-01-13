@@ -1,23 +1,27 @@
 pragma solidity ^0.4.0;
 contract Job {
     struct Bidder {
-        address wallet;
-        string cypherText;
-        bool exists;
+        address private wallet;
+        string private cypherText;
+        bool private exists;
     }
 
-    address owner;
-    uint payoutAmountGwei;
-    uint callLengthMinutes;
-    uint maxParticipants;
-
-    // Keyable must be the same between the client and the server.
+    // Secure State
+    address private owner;
+    uint private payoutAmountGwei;
+    uint private maxParticipants;
     mapping(string => Bidder) private bidder;
 
-    function Job(address _marketerWallet, uint _minutes, uint _payout) public {
+    // Clients will encrypt using this value.
+    string private piiPublicKey;
+
+    // Presented Metadata
+    uint private callLengthMinutes;
+
+    function Job(uint _minutes, uint _payout, string _piiPublicKey) public {
         owner = msg.sender;
         payoutAmountGwei = _payout;
-
+        piiPublicKey = _piiPublicKey;
     }
 
     // NOTE: this can only be called once per keyable value, this is to prevent overwriting existing data maliciously.
