@@ -12,6 +12,9 @@ contract Job {
     uint private maxParticipants;
     mapping(string => Bidder) private bidder;
 
+    // Log the send money event
+    event LogCoinsSent(address sentTo, uint amount);
+
     // Clients will encrypt using this value.
     string private piiPublicKey;
 
@@ -38,5 +41,6 @@ contract Job {
         if (this.balance > 0) return;
         // validate sender has the right balance
         bidder[keyable].wallet.transfer(payoutAmountGwei);
+        LogCoinsSent(bidder[keyable].wallet, payoutAmountGwei);
     }
 }
