@@ -1,9 +1,9 @@
 pragma solidity ^0.4.0;
 contract Job {
     struct Bidder {
-        address private wallet;
-        string private cypherText;
-        bool private exists;
+        address wallet;
+        string cypherText;
+        bool exists;
     }
 
     // Secure State
@@ -14,6 +14,7 @@ contract Job {
 
     // Log the send money event
     event LogCoinsSent(address sentTo, uint amount);
+    event BidderRegistered(string keyable, address wallet);
 
     // Clients will encrypt using this value.
     string private piiPublicKey;
@@ -21,10 +22,12 @@ contract Job {
     // Presented Metadata
     uint private callLengthMinutes;
 
-    function Job(uint _minutes, uint _payout, string _piiPublicKey) public {
+    function Job(uint _minutes, uint _payout, string _piiPublicKey, uint _maxParticipants) public {
         owner = msg.sender;
         payoutAmountGwei = _payout;
         piiPublicKey = _piiPublicKey;
+        callLengthMinutes = _minutes;
+        maxParticipants = _maxParticipants;
     }
 
     // NOTE: this can only be called once per keyable value, this is to prevent overwriting existing data maliciously.
@@ -34,6 +37,7 @@ contract Job {
 
         // TODO: Disallow max capacity
         bidder[keyable] = Bidder(wallet, cypherText, true);
+        BidderRegistered(keyable, wallet);
     }
 
     function payParticipant(string keyable) private {
