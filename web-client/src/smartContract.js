@@ -101,8 +101,7 @@ export const ConstructJob = (addr, value, args, eventNotify, done) => {
 
 export const setJobArgs = (jobAddr, args, done) => {
   getJob(jobAddr, (err, contract) => {
-    contract.configureJob(args.minute, args.payout, args.description);
-    done();
+    contract.configureJob(args.minute, args.payout, args.description, done);
   })
 }
 
