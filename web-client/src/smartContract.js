@@ -50,6 +50,28 @@ export const sendTx = (params, done) => {
   }
 }
 
+export const ConstructJob = (addr, value, args, eventNotify, done) => {
+  const GAS = 3000000;
+  createJobContract({ from: addr, gas: GAS }, args, (err, res) => {
+    if (err) return done(err);
+    eventNotify("Created Contract", res);
+    waitForRecipt(res.transactionHash, (err, recipt) => {
+      if (err) return done(err);
+      eventNotify("Created Recipt", recipt);
+      sendTx({
+          from: addr,
+          to: recipt.contractAddress,
+          gas: GAS,
+          value: value,
+        }, (err, tx) => {
+          if (err) return done(err);
+          eventNotify("Added value to contract", tx);
+          done(null, {tx, recipt, contract: res});
+        })
+      })
+  });
+}
+
 //    const params = {
 //      from: getWeb3().eth.defaultAccount,
 //      value: 10,

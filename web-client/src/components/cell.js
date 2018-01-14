@@ -5,6 +5,7 @@ import {
   sendTx,
   createJobContract,
   waitForRecipt,
+  ConstructJob,
 } from '../smartContract'
 
 class Cell extends Component {
@@ -15,19 +16,9 @@ class Cell extends Component {
 
   createContract() {
     let args = [8, 10, "uber public secret"]
-    createJobContract({ from: getDefaultAddress(), gas: 3000000 }, args, (err, res) => {
-      console.log(err, res);
-      waitForRecipt(res.transactionHash, (err, recipt) => {
-        console.log(err, recipt);
-        sendTx({
-          from: getDefaultAddress(),
-          to: recipt.contractAddress,
-          gas: 3000000,
-          value: 40,
-        }, (err, res) => {
-          console.log(err, res)
-        })
-      })
+    let onEvent = console.log;
+    ConstructJob(getDefaultAddress(), 40, args, onEvent, (err, res) => {
+
     })
 //    return getJobBin().then((bin) => {
 //      return getJobABI().then((abi) => {
