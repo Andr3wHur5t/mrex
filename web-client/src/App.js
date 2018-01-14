@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import RaisedButton from 'material-ui/RaisedButton';
 import Header from './components/header'
+import JobsListing from './components/jobsListing'
 import Cell from './components/cell'
+import PostJob from './components/postJob'
 import './App.css';
 
 class App extends Component {
@@ -11,11 +12,7 @@ class App extends Component {
       <div className="App">
         <MuiThemeProvider>
           <Header/>
-          <RaisedButton label="Default" />
-          <Cell/>
-          <Cell/>
-          <Cell/>
-          <Cell/>
+          <PostJob/>
         </MuiThemeProvider>
       </div>
     );

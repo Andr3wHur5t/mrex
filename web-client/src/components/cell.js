@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-// import Request from '../request';
 import RaisedButton from 'material-ui/RaisedButton';
 import {
   getDefaultAddress,
