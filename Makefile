@@ -1,6 +1,6 @@
 
 install:
-	npm install -g solcjs && \
+	npm install -g solc && \
 	cd web-client && \
 	yarn install
 
