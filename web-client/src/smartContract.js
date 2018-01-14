@@ -1,5 +1,6 @@
 import contractBin from "./solidity/__eth_src_job_sol_Job.bin"
 import contractABI from "./solidity/__eth_src_job_sol_Job.abi"
+import async from 'async'
 
 export const getWeb3 = () => window.web3;
 
@@ -26,13 +27,14 @@ export const getJobContract = (done) => {
 
 export const createJobContract = (params, done) => {
   getJobContract((err, contractData) => {
+    if (err) return done(err)
     params.data = contractData.bin;
     try { contractData.contract.new(params, done); }
     catch (e) { done(e); }
   });
 }
 
-export const getJob(contractAddr, done) {
+export const getJob = (contractAddr, done) => {
   getJobContract((err, contractData) => {
     if (err) return done(err);
     contractData.contract.at(contractAddr, done);
@@ -67,24 +69,41 @@ export const sendTx = (params, done) => {
 export const ConstructJob = (addr, value, args, eventNotify, done) => {
   const GAS = 3000000;
 
-  createJobContract({ from: addr, gas: GAS }, [args.description, args.minute, args.payout], (err, res) => {
+  createJobContract({ from: addr, gas: GAS }, (err, res) => {
     if (err) return done(err);
     eventNotify("Created Contract", res);
     waitForRecipt(res.transactionHash, (err, recipt) => {
       if (err) return done(err);
       eventNotify("Created Recipt", recipt);
-      sendTx({
-          from: addr,
-          to: recipt.contractAddress,
-          gas: GAS,
-          value: value,
-        }, (err, tx) => {
-          if (err) return done(err);
-          eventNotify("Added value to contract", tx);
-          done(null, {tx, recipt, contract: res});
-        })
-      })
+
+      async.parallel([
+        (next) => {
+          setJobArgs(recipt.contractAddress, args, (err) => {
+            if (err) return next(err);
+            eventNotify("Configured contract.");
+            next()
+          });
+
+        },
+        (next) => {
+          sendTx({ from: addr, to: recipt.contractAddress, gas: GAS, value: value },
+            (err, tx) => {
+            if (err) return next(err);
+            eventNotify("Added value to contract", tx);
+            next(null, {tx, recipt, contract: res});
+          })
+        }
+      ], done)
+    });
   });
+}
+
+
+export const setJobArgs = (jobAddr, args, done) => {
+  getJob(jobAddr, (err, contract) => {
+    contract.configureJob(args.minute, args.payout, args.description);
+    done();
+  })
 }
 
 //    const params = {

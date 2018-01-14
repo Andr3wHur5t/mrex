@@ -44,13 +44,14 @@ class PostJobForm extends Component {
 
   postJob() {
     console.log("Job Posted");
-    jobArgs = {
+    let jobArgs = {
       description: "clean floor",
       minute: 60,
-      payout: 0.01,
+      payout: 1,
     }
-    ConstructJob(getDefaultAddress(), 40, args, onEvent, (err, res) => {
-    }
+    let onEvent = console.log;
+    ConstructJob(getDefaultAddress(), 40, jobArgs, onEvent, (err, res) => {
+    });
     //TODO call the contract
 
   }
