@@ -55,10 +55,10 @@ export const ConstructJob = (addr, value, args, eventNotify, done) => {
 
   createJobContract({ from: addr, gas: GAS }, [args.description, args.minute, args.payout], (err, res) => {
     if (err) return done(err);
-    eventNotify("Created Contract", res);
+    eventNotify({msg: "Created Contract", data:res});
     waitForRecipt(res.transactionHash, (err, recipt) => {
       if (err) return done(err);
-      eventNotify("Created Recipt", recipt);
+      eventNotify({msg: "Created Receipt", data: recipt});
       sendTx({
           from: addr,
           to: recipt.contractAddress,
@@ -66,7 +66,7 @@ export const ConstructJob = (addr, value, args, eventNotify, done) => {
           value: value,
         }, (err, tx) => {
           if (err) return done(err);
-          eventNotify("Added value to contract", tx);
+          eventNotify({msg:"Added value to contract", data:tx});
           done(null, {tx, recipt, contract: res});
         })
       })

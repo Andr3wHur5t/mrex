@@ -13,7 +13,6 @@ class App extends Component {
         <MuiThemeProvider>
           <Header/>
           <PostJob/>
-          <Cell/>
         </MuiThemeProvider>
       </div>
     );

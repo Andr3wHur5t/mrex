@@ -13,52 +13,56 @@ class PostJobForm extends Component {
 
   constructor(props) {
     super(props);
-    var showContractIsCreating = false;
-    var showWaitingForReceipt = false;
-    var showAddingValueToContract = false;
+    this.state = {
+      showContractIsCreating: false,
+      showWaitingForReceipt: false,
+      showAddingValueToContract: false,
+    }
+    this.postJob = this.postJob.bind(this);
+    this.jobState = this.jobState.bind(this);
+    this.displayCreating = this.displayCreating.bind(this);
+    this.displayWaiting = this.displayWaiting.bind(this);
+    this.displayAddingValue = this.displayAddingValue.bind(this);
+    this.shouldDisplayPostJob = this.shouldDisplayPostJob.bind(this);
+
+    this.jobPayout = 0;
   }
 
   componentDidMount() {
   }
 
-  contractCreated() {
-    this.props.showContractIsCreating = true;
-  }
-
-  waitingForReceipt() {
-    this.props.showContractIsCreating = false;
-    this.props.showWaitingForReceipt = true;
-  }
-
-  addingValueToContract() {
-    this.props.showAddingValueToContract = true;
-    this.props.showContractIsCreating = false;
-    this.props.showWaitingForReceipt = false;
-  }
-
-  contractCompleted() {
-    this.props.showAddingValueToContract = false;
-    this.props.showContractIsCreating = false;
-    this.props.showWaitingForReceipt = false;
+  jobState(state) {
+    if (state.msg === "Created Contract") {
+      console.log("created contract");
+      this.setState({showContractIsCreating : false});
+      this.setState({showWaitingForReceipt : true});
+    } else if (state.msg === "Created Receipt") {
+      console.log("created receipt");
+      this.setState({showAddingValueToContract : true});
+      this.setState({showWaitingForReceipt : false});
+    } else {
+      console.log("added value");
+      this.setState({showAddingValueToContract : false});
+    }
   }
 
   postJob() {
-    console.log("Job Posted");
-    jobArgs = {
-      description: "clean floor",
-      minute: 60,
-      payout: 0.01,
+    console.log("in post job, job payout is ", this.jobPayout);
+    const jobArgs = {
+      description: this.jobDescription,
+      minute: this.jobMinute,
+      payout: this.jobPayout,
     }
-    ConstructJob(getDefaultAddress(), 40, args, onEvent, (err, res) => {
-    }
-    //TODO call the contract
-
+    this.setState({showContractIsCreating : true});
+    ConstructJob(getDefaultAddress(), 40, jobArgs, this.jobState, (err, res) => {
+      console.log("created job.  err is ", err)
+    })
   }
 
   shouldDisplayPostJob() {
-    if (!this.props.showAddingValueToContract &&
-      !this.props.showContractIsCreating &&
-      !this.props.showWaitingForReceipt
+    if (!this.state.showAddingValueToContract &&
+      !this.state.showContractIsCreating &&
+      !this.state.showWaitingForReceipt
     ) {
       return "visible";
     }
@@ -66,21 +70,21 @@ class PostJobForm extends Component {
   }
 
   displayCreating() {
-    if (this.props.showContractIsCreating) {
+    if (this.state.showContractIsCreating) {
       return "visible";
     }
     return "none";
   }
 
   displayWaiting() {
-    if (this.props.showWaitingForReceipt) {
+    if (this.state.showWaitingForReceipt) {
       return "visible";
     }
     return "none";
   }
 
   displayAddingValue() {
-    if (this.props.showAddingValueToContract) {
+    if (this.state.showAddingValueToContract) {
       return "visible";
     }
     return "none";
@@ -99,6 +103,7 @@ class PostJobForm extends Component {
               type="text"
               name="job-description"
               placeholder="Job Description"
+              onChange={(e) => { this.jobDescription = e.target.value; }}
             />
           </div>
           <div className="job-payout">
@@ -106,8 +111,18 @@ class PostJobForm extends Component {
               type="text"
               name="amount-text-field"
               placeholder="Job Payout (in ETH)"
+              onChange={(e) => { this.jobPayout = e.target.value; }}
             />
           </div>
+          <div className="job-duration">
+            <TextField
+              type="text"
+              name="amount-text-field"
+              placeholder="Job Duration (minutes)"
+              onChange={(e) => { this.jobMinute = e.target.value; }}
+            />
+          </div>
+
           <div className="btn-wrapper">
             <RaisedButton
               label="Create Job"
