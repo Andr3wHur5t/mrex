@@ -21,6 +21,7 @@
     -->
     <title>React App</title>
   </head>
+
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
@@ -37,4 +38,21 @@
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
   </body>
+
+  <script>
+    window.addEventListener('load', function() {
+      
+      // Checking if Web3 has been injected by the browser (Mist/MetaMask)
+      if (typeof web3 !== 'undefined') {
+        console.log("loading web3...")
+        // Use the browser's ethereum provider
+        // var provider = web3.currentProvider
+        window.web3 = new Web3(web3.currentProvider)
+
+      } else {
+        console.log('No web3? You should consider trying MetaMask!')
+      }
+
+    })
+  </script>
 </html>

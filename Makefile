@@ -5,5 +5,5 @@ install:
 	yarn install
 
 build:
-	solcjs --bin ./eth/src/job.sol && \
-	solcjs --abi ./eth/src/job.sol
+	solcjs --bin ./eth/src/job.sol --output-dir ./web-client/src/solidity && \
+	solcjs --abi ./eth/src/job.sol --output-dir ./web-client/src/solidity
