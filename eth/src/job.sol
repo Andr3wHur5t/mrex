@@ -44,29 +44,20 @@ contract Job {
         bidder.wallet = wallet;
         bidder.cypherText = cypherText;
         bidder.exists = true;
-        
+
         // biddersArrayKeyables.push(keyable);
         // biddersArrayCyphers.push(cypherText);
         // BidderRegistered(wallet);
     }
 
-    function completeCall() public  returns(bool) {
-        // TODO validate the keyable matches the bidder
-        //if (bidder.completed == true) 
+    function payParticipant() public returns(bool)  {
+        if (msg.sender != owner) return false;
+        if (this.balance < 0) return false;
+        if (bidder.completed == true) return;
         bidder.completed = true;
-        payParticipant();
+        bidder.wallet.transfer(payoutAmountGwei);
         return true;
     }
 
-    function payParticipant() returns(bool)  {
-        if (msg.sender != owner) return false;
-        if (this.balance < 0) return false;
-        // validate sender has the right balance
-        //address wal = bidder.wallet;
-        //uint x = 2;
-        msg.sender.transfer(2);
-        return true;
-    }
-    
     function () public payable { }
 }
