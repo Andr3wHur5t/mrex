@@ -13,11 +13,11 @@ export const createJobContract = (params, args, done) => {
   getJobBin().then((bin) => {
     getJobABI().then((abi) => {
       params.data = bin;
-      let contract = new getWeb3().eth.contract(abi, params);
-      window.contract
-      // let Contract = getWeb3().eth.contract(abi);
+//      let contract = new getWeb3().eth.contract(abi, params);
+//      window.contract
+      let contract = getWeb3().eth.contract(abi);
       try {
-        contract.deploy({data: bin, arguments: args}, done)
+        contract.new(params, done)
       } catch (e) {
         done(e);
       }
