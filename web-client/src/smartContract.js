@@ -8,21 +8,35 @@ export const getDefaultAddress = () => getWeb3().eth.defaultAccount
 export const getJobBin = () => fetch(contractBin).then((res) => res.text())
 export const getJobABI = () => fetch(contractABI).then((res) => res.json())
 
-// TODO: Clean
-export const createJobContract = (params, args, done) => {
+var gloablJobData;
+export const getJobContract = (done) => {
+  if (gloablJobData) return done(null, gloablJobData);
   getJobBin().then((bin) => {
     getJobABI().then((abi) => {
-      params.data = bin;
-//      let contract = new getWeb3().eth.contract(abi, params);
-//      window.contract
       let contract = getWeb3().eth.contract(abi);
-      try {
-        contract.new(params, done)
-      } catch (e) {
-        done(e);
-      }
-    });
-  }).catch((e) => done(e));
+      gloablJobData = {
+        contract: contract,
+        abi: abi,
+        bin: bin,
+      };
+      done(null, gloablJobData);
+    })
+  }).catch(done);
+}
+
+export const createJobContract = (params, done) => {
+  getJobContract((err, contractData) => {
+    params.data = contractData.bin;
+    try { contractData.contract.new(params, done); }
+    catch (e) { done(e); }
+  });
+}
+
+export const getJob(contractAddr, done) {
+  getJobContract((err, contractData) => {
+    if (err) return done(err);
+    contractData.contract.at(contractAddr, done);
+  });
 }
 
 export const waitForRecipt = (txHash, done) => {
