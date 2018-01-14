@@ -27,13 +27,18 @@ contract Job {
     // Presented Metadata
     uint public callLengthMinutes;
 
-    //function Job(uint _payout) public {
-    function Job(uint _minutes, uint _payout, string _piiPublicKey) public {
+    function Job() public {
+    //function Job(uint _minutes, uint _payout, string _piiPublicKey) public {
         owner = msg.sender;
+    }
+
+    function configureJob(uint _minutes, uint _payout, string _piiPublicKey) public {
+        if (msg.sender != owner) return;
         payoutAmountGwei = _payout;
         piiPublicKey = _piiPublicKey;
         callLengthMinutes = _minutes;
     }
+
 
     // NOTE: this can only be called once per keyable value, this is to prevent overwriting existing data maliciously.
     function registerBidder(bytes32 cypherText, address wallet) public {
