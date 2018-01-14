@@ -4,7 +4,10 @@ import contractBin from "../solidity/__eth_src_job_sol_Job.bin"
 import contractABI from "../solidity/__eth_src_job_sol_Job.abi"
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import TextField from 'material-ui/TextField';
-
+import {
+  getDefaultAddress,
+  ConstructJob,
+} from '../smartContract'
 
 class PostJobForm extends Component {
 
@@ -41,6 +44,13 @@ class PostJobForm extends Component {
 
   postJob() {
     console.log("Job Posted");
+    jobArgs = {
+      description: "clean floor",
+      minute: 60,
+      payout: 0.01,
+    }
+    ConstructJob(getDefaultAddress(), 40, args, onEvent, (err, res) => {
+    }
     //TODO call the contract
 
   }

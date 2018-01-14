@@ -52,7 +52,8 @@ export const sendTx = (params, done) => {
 
 export const ConstructJob = (addr, value, args, eventNotify, done) => {
   const GAS = 3000000;
-  createJobContract({ from: addr, gas: GAS }, args, (err, res) => {
+
+  createJobContract({ from: addr, gas: GAS }, [args.description, args.minute, args.payout], (err, res) => {
     if (err) return done(err);
     eventNotify("Created Contract", res);
     waitForRecipt(res.transactionHash, (err, recipt) => {
